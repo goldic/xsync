@@ -1,6 +1,7 @@
 package xsync
 
 import (
+	"bytes"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
@@ -193,15 +194,23 @@ func (m *Map[K, T]) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m.KeyValues())
 }
 
-func (m *Map[K, T]) UnmarshalJSON(data []byte) (err error) {
-	var vv map[K]T
-	if err = json.Unmarshal(data, &vv); err != nil {
-		return
-	}
+func (m *Map[K, T]) UnmarshalJSON(data []byte) error {
 	m.mx.Lock()
 	defer m.mx.Unlock()
-	m.vals, m.ver = vv, m.ver+1
-	return
+
+	err := json.NewDecoder(bytes.NewReader(data)).Decode(&m.vals)
+	m.ver++
+	return err
+}
+
+func (m *Map[K, T]) MarshalBinary() ([]byte, error) {
+	w := bytes.NewBuffer(nil)
+	err := m.BinaryEncode(w)
+	return w.Bytes(), err
+}
+
+func (m *Map[K, T]) UnmarshalBinary(data []byte) error {
+	return m.BinaryDecode(bytes.NewReader(data))
 }
 
 func (m *Map[K, T]) BinaryEncode(w io.Writer) error {
@@ -211,13 +220,13 @@ func (m *Map[K, T]) BinaryEncode(w io.Writer) error {
 	return gob.NewEncoder(w).Encode(m.vals)
 }
 
-func (m *Map[K, T]) BinaryDecode(r io.Reader) (err error) {
+func (m *Map[K, T]) BinaryDecode(r io.Reader) error {
 	m.mx.Lock()
 	defer m.mx.Unlock()
 
-	err = gob.NewDecoder(r).Decode(&m.vals)
+	err := gob.NewDecoder(r).Decode(&m.vals)
 	m.ver++
-	return
+	return err
 }
 
 // String returns object as string (encode to json)
