@@ -77,6 +77,20 @@ func (m *Map[K, T]) Get(key K) (_ T) {
 	return
 }
 
+func (m *Map[K, T]) GetOrSet(key K, fn func() T) (res T) {
+	var ok bool
+	m.mx.RLock()
+	if m.vals != nil {
+		res, ok = m.vals[key]
+	}
+	m.mx.RUnlock()
+	if !ok {
+		res = fn()
+		m.Set(key, res)
+	}
+	return
+}
+
 func (m *Map[K, T]) Exists(key K) bool {
 	m.mx.RLock()
 	defer m.mx.RUnlock()
@@ -88,7 +102,7 @@ func (m *Map[K, T]) Exists(key K) bool {
 	return ok
 }
 
-func (m *Map[K, T]) Size() int {
+func (m *Map[K, T]) Len() int {
 	m.mx.RLock()
 	defer m.mx.RUnlock()
 	return len(m.vals)
