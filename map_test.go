@@ -6,7 +6,7 @@ func TestMap_init(t *testing.T) {
 	var m Map[int, string]
 
 	require(t, "" == m.Get(123))
-	require(t, 0 == m.Size())
+	require(t, 0 == m.Len())
 }
 
 func TestMap_Set(t *testing.T) {
@@ -23,7 +23,7 @@ func TestMap_Set(t *testing.T) {
 	require(t, !m.Exists("cc"))
 	require(t, 111 == m.Get("aa"))
 	require(t, 222 == m.Get("bb"))
-	require(t, 2 == m.Size())
+	require(t, 2 == m.Len())
 }
 
 func TestMap_Exists(t *testing.T) {
@@ -52,7 +52,7 @@ func TestMap_Delete(t *testing.T) {
 
 	require(t, !m.Exists(111))
 	require(t, "" == m.Get(111))
-	require(t, 2 == m.Size())
+	require(t, 2 == m.Len())
 }
 
 func TestMap_Values(t *testing.T) {
@@ -62,7 +62,7 @@ func TestMap_Values(t *testing.T) {
 
 	vv := m.Values()
 
-	require(t, 2 == m.Size())
+	require(t, 2 == m.Len())
 	require(t, 2 == len(vv))
 	require(t, 123+456 == vv[0]+vv[1])
 }
