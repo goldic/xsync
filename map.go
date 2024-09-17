@@ -193,13 +193,12 @@ func (m *Map[K, T]) Random() (key K, value T) {
 	if cnt := len(m.vals); cnt > 0 {
 		// todo: optimize it!  (add keys slice)
 		n := rand.Intn(cnt)
-		for k, v := range m.vals {
+		for k := range m.vals {
 			if n == 0 {
-				return k, v
+				return k, m.vals[k]
 			}
 			n--
 		}
-		panic(1)
 	}
 	return
 }
