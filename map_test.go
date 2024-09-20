@@ -26,6 +26,19 @@ func TestMap_Set(t *testing.T) {
 	require(t, 2 == m.Len())
 }
 
+func TestMap_Increment(t *testing.T) {
+	var m Map[string, int]
+	m.Set("def", 456)
+
+	m.Increment("abc", 100)
+	m.Increment("abc", 20)
+	m.Increment("abc", 3)
+	m.Increment("def", -56)
+
+	require(t, m.Get("abc") == 123)
+	require(t, m.Get("def") == 400)
+}
+
 func TestMap_Exists(t *testing.T) {
 	var m Map[int, string]
 
