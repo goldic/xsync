@@ -220,14 +220,12 @@ func (m *Map[K, T]) Random() (key K, value T) {
 	m.mx.RLock()
 	defer m.mx.RUnlock()
 
-	if cnt := len(m.vals); cnt > 0 {
-		// todo: optimize it!  (add keys slice)
-		n := rand.Intn(cnt)
-		for k := range m.vals {
-			if n == 0 {
-				return k, m.vals[k]
+	if n := len(m.vals); n > 0 {
+		n = rand.Intn(n)
+		for key, value = range m.vals {
+			if n--; n < 0 {
+				return
 			}
-			n--
 		}
 	}
 	return
@@ -285,13 +283,12 @@ func encString(v any) string {
 	}
 }
 
-func mapKeys[K comparable, T any](mm map[K]T) []K {
-	if mm == nil {
-		return nil
+func mapKeys[K comparable, T any](mm map[K]T) (kk []K) {
+	if mm != nil {
+		kk = make([]K, 0, len(mm))
+		for k := range mm {
+			kk = append(kk, k)
+		}
 	}
-	vv := make([]K, 0, len(mm))
-	for k := range mm {
-		vv = append(vv, k)
-	}
-	return vv
+	return
 }
